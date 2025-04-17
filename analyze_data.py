@@ -14,9 +14,9 @@ label_files = sorted([f for f in os.listdir(labels_dir) if f.endswith(".nii.gz")
 
 print(f"Number of training images: {len(image_files)}")
 
-# Load a sample image and label
-sample_image_path = os.path.join(images_dir, image_files[0])
-sample_label_path = os.path.join(labels_dir, label_files[0])
+# Load a sample image and label (change index to 1 for a different image)
+sample_image_path = os.path.join(images_dir, image_files[1])
+sample_label_path = os.path.join(labels_dir, label_files[1])
 
 img = nib.load(sample_image_path)
 label = nib.load(sample_label_path)
@@ -29,7 +29,7 @@ print("Image shape:", img_data.shape)
 print("Voxel spacing:", img.header.get_zooms())
 
 # Display sample slices from axial, sagittal, coronal views
-def show_slices(image, label):
+def show_slices(image, label, output_path="slices.png"):
     mid_slices = [s//2 for s in image.shape]
 
     fig, axs = plt.subplots(2, 3, figsize=(15, 6))
@@ -52,19 +52,7 @@ def show_slices(image, label):
         ax.axis("off")
 
     plt.tight_layout()
-    plt.show()
+    plt.savefig(output_path)  # Save the figure instead of showing it
+    plt.close()
 
-show_slices(img_data, label_data)
-
-# (Optional) Distribution of segmentation volumes
-volumes = []
-for label_file in label_files:
-    label_path = os.path.join(labels_dir, label_file)
-    label_img = nib.load(label_path).get_fdata()
-    volumes.append(np.sum(label_img))
-
-plt.hist(volumes, bins=10, color='skyblue')
-plt.title("Distribution of Segmentation Volumes")
-plt.xlabel("Volume (voxel count)")
-plt.ylabel("Frequency")
-plt.show()
+show_slices(img_data, label_data, output_path="sample_slices.png")
